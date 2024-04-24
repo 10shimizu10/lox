@@ -5,7 +5,7 @@ import java.util.List;
 
 import static com.craftinginterpreters.lox.TokenType.*;
 
-class Parseer {
+class Parser {
     private static class ParseError extends RuntimeException {}
     private final List<Token> tokens;
     private int current = 0;
@@ -59,7 +59,7 @@ class Parseer {
         return expr;
     }
 
-    private Expr facotr(){
+    private Expr factor(){
         Expr expr = unary();
 
         while(match(SLASH, STAR)){
@@ -106,7 +106,7 @@ class Parseer {
         return false;
     }
 
-    private Token consme(TokenType type, String message){
+    private Token consume(TokenType type, String message){
         if(check(type)) return advance();
 
         throw error(peek(), message);
@@ -114,7 +114,7 @@ class Parseer {
 
     private boolean check(TokenType type){
         if(isAtEnd()) return false;
-        return peek.type == type;
+        return peek().type == type;
     }
 
     private Token advance(){
@@ -135,7 +135,7 @@ class Parseer {
     }
 
     private ParseError error(Token token, String message){
-        Lox.error(token, messaga);
+        Lox.error(token, message);
         return new ParseError();
     }
 
@@ -143,9 +143,9 @@ class Parseer {
         advance();
 
         while(!isAtEnd()){
-            if(preivous().type == SEMICOLON) return;
+            if(previous().type == SEMICOLON) return;
 
-            switch(peek().tyupe){
+            switch(peek().type){
                 case CLASS:
                 case FUN:
                 case VAR:
@@ -156,7 +156,7 @@ class Parseer {
                 case RETURN:
                     return;
             }
-            adavnce();
+            advance();
         }
     }
 }
