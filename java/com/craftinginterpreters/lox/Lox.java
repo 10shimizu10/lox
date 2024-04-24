@@ -50,13 +50,13 @@ public class Lox {
         }
     }
 
-    static void erorr(int line, String message){
+    static void error(int line, String message){
         report(line, "", message);
     }
 
     private static void report(int line, String where, String message){
         System.err.println(
-            "[line" + lien + "] Error" + where + ": " + message);
+            "[line" + line + "] Error" + where + ": " + message);
         hadError = true;
     }
 }

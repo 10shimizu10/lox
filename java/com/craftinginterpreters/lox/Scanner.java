@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static com.craftinginterpreters.lox.TokenType.*;
 
-class scanner {
+class Scanner {
     private static final Map<String, TokenType> keywords;
 
     static {
@@ -29,6 +29,7 @@ class scanner {
         keywords.put("var",    VAR);
         keywords.put("while",  WHILE);
     }
+
     private final String source;
     private final List<Token> tokens = new ArrayList<>(); 
     private int start = 0;
@@ -36,7 +37,7 @@ class scanner {
     private int line = 1;
 
     Scanner(String source){
-        this.sorce = sorce;
+        this.source = source;
     }
     
     List<Token> scanTokens(){
@@ -108,8 +109,8 @@ class scanner {
     private void identifier(){
         while(isAlphaNumeric(peek())) advance();
 
-        String text =sorce.substring(start, current);
-        TokenType = keywords.get(text);
+        String text =source.substring(start, current);
+        TokenType type = keywords.get(text);
         if(type == null) type =IDENTIFIER;
         addToken(type);
     }
@@ -122,7 +123,7 @@ class scanner {
             while (isDigit(peek())) advance();
         }
 
-        addToken(NUMBER Double.parseDouble(source.substring(start, current)))
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
     private void string(){
@@ -132,17 +133,17 @@ class scanner {
         }
 
         if (isAtEnd()) {
-            lox.erorr(line, "Unterminated string.");
+            Lox.error(line, "Unterminated string.");
             return;
         }
 
         advance(); //最後の"を消費
 
         String value = source.substring(start +1, current - 1);
-        addToken(STRING value);
+        addToken(STRING, value);
     }
 
-    private boolean match(char expetecd){
+    private boolean match(char expected){
         if (isAtEnd()) return false;
         if (source.charAt(current) != expected) return false;
 
@@ -157,7 +158,7 @@ class scanner {
 
     private char peekNext() {
         if(current + 1 >= source.length()) return '\0';
-        return charAt(current + 1);
+        return source.charAt(current + 1);
     }
 
     private boolean isAlpha(char c) {
@@ -175,14 +176,14 @@ class scanner {
     }
 
     private boolean isAtEnd() {
-        return current >= source.lenght();
+        return current >= source.length();
     }
 
     private char advance() {
-        return source.charAt(current++)
+        return source.charAt(current++);
     }
 
-    private void addToken(Tokentype type){
+    private void addToken(TokenType type){
         addToken(type, null);
     }
 
