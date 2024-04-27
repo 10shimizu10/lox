@@ -1,41 +1,43 @@
-package com.craftinginterpreters.lox
-
+package com.craftinginterpreters.lox;
 
 import java.util.List;
 
-abstract classExpr {
- static classBinary extendsExpr {
-    Binary(Expr left, Token operator, Expr right) {
-      this.left = left;
-      this.operator = operator;
-      this.right = right;
+abstract class Expr {
+    static class Binary extends Expr {
+        final Expr left;
+        final Token operator;
+        final Expr right;
+
+        Binary(Expr left, Token operator, Expr right) {
+            this.left = left;
+            this.operator = operator;
+            this.right = right;
+        }
     }
 
-    final Expr left;
-    final Token operator;
-    final Expr right;
-  }
- static classGrouping extendsExpr {
-    Grouping(Expr expression) {
-      this.expression = expression;
+    static class Grouping extends Expr {
+        final Expr expression;
+
+        Grouping(Expr expression) {
+            this.expression = expression;
+        }
     }
 
-    final Expr expression;
-  }
- static classLiteral extendsExpr {
-    Literal(Object value) {
-      this.value = value;
+    static class Literal extends Expr {
+        final Object value;
+
+        Literal(Object value) {
+            this.value = value;
+        }
     }
 
-    final Object value;
-  }
- static classUnary extendsExpr {
-    Unary(Token operator, Expr right) {
-      this.operator = operator;
-      this.right = right;
-    }
+    static class Unary extends Expr {
+        final Token operator;
+        final Expr right;
 
-    final Token operator;
-    final Expr right;
-  }
+        Unary(Token operator, Expr right) {
+            this.operator = operator;
+            this.right = right;
+        }
+    }
 }

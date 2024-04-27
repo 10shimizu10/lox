@@ -2,7 +2,6 @@ package com.craftinginterpreters.lox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.craftinginterpreters.lox.TokenType.*;
@@ -68,6 +67,17 @@ class Parser {
         return expr;
     }
 
+    private Expr equality(){
+        Expr expr = comparison();
+
+        while(match(BANG_EQUAL, EQUAL_EQUAL)){
+            Token operator = previous();
+            Expr right = comparison();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
     private Stmt declaration(){
         try{
             if(match(FUN)) return function("function");
@@ -109,7 +119,7 @@ class Parser {
 
         Expr increment = null;
         if(!check(RIGHT_PAREN)){
-            increment = expressio();
+            increment = expression();
         }
         consume(RIGHT_PAREN, "Expect ')' after for clauses.");
         Stmt body = statement();
@@ -124,7 +134,7 @@ class Parser {
         if(condition == null) condition = new Expr.Literal(true);
         body = new Stmt.While(condition, body);
 
-        fi(initializer != null){
+        if(initializer != null){
             body = new Stmt.Block(Arrays.asList(initializer, body));
         }
 
@@ -194,7 +204,7 @@ class Parser {
                 );
             }while(match(COMMA));
         }
-        consume(RIGHT_PAREN, "Expect '(' after paramters.");
+        consume(RIGHT_PAREN, "Expect ')' after paramters.");
         consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
         List<Stmt> body = block();
         return new Stmt.Function(name, parameters, body);
@@ -205,10 +215,9 @@ class Parser {
 
         while(!check(RIGHT_BRACE) && !isAtEnd){
             statements.add(declaration());
-
-            consume(RIGHT_BRACE, "Expect '}' after block.");
-            return statements;
         }
+        consume(RIGHT_PAREN, "Expect '}' after block.");
+        return statements;
     }
 
     private equality(){
@@ -348,7 +357,7 @@ class Parser {
         return tokens.get(current);
     }
 
-    private Token preivous(){
+    private Token previous(){
         return tokens.get(current - 1);
     }
 

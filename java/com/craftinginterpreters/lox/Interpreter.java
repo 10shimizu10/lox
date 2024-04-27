@@ -1,10 +1,11 @@
 package com.craftinginterpreters.lox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<void>{
     final Enviornment globals = new Enviornment();
     private Enviornment environment = globals;
     private final Map<Expr, Integer> locals = new HashMap<>();
@@ -23,7 +24,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
             public String toString() { return "<native fn> "; }
         });
     }
-    private Enviornment environment = globals;
     void interpret(List<Stmt> statements){
         try{
             for(Stmt statement : statements){
@@ -48,7 +48,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
     void executeBlock(List<Stmt> statements, Enviornment environment){
         Enviornment previous = this.environment;
         try{
-            this.Enviornment = environment;
+            this.enviornment = environment;
 
             for(Stmt statement : statements){
                 execute(statement);
@@ -61,7 +61,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
     @Override
     public Void visitBlockStmt(Stmt.Block stmt){
         executeBlock(stmt.statements, new Enviornment(environment));
-        return null
+        return null;
     }
 
     @Override
@@ -192,7 +192,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
 
         LoxCallable function = (LoxCallable)callee;
         if(arguments.size() != function.arity()){
-            throw new RuntimeError(expr.paren, "Expected " + function.arity() + " arguments but got" + argumentssize() + ".");
+            throw new RuntimeError(expr.paren, "Expected " + function.arity() + " arguments but got" + arguments.size() + ".");
         }
 
         return function.call(this, arguments);
@@ -216,7 +216,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.VAR<void>{
 
     @Override
     public Object visitLogicalExpr(Expr.Logical expr){
-        Object Left = evaluate(expr.left);
+        Object left = evaluate(expr.left);
 
         if(expr.operator.type == TokenType.OR){
             if(isTruthy(left)) return left;

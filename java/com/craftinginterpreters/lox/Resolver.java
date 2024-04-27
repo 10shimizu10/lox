@@ -8,7 +8,7 @@ import java.util.Stack;
 class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
-    private FuctionType currentFunction = FunctionType.NONE;
+    private FunctionType currentFunction = FunctionType.NONE;
 
     Resolver(Interpreter interpreter){
         this.interpreter = interpreter;
@@ -19,14 +19,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         FUNCTION
     }
 
-    void resole(List<Stmt> statements){
+    void resolve(List<Stmt> statements){
         for(Stmt statement : statements){
             resolve(statement);
         }
     }
 
     @Override
-    public void VisitBlockStmt(Stmt.Block stmt){
+    public Void VisitBlockStmt(Stmt.Block stmt){
         beginScope();
         Resolver(stmt.statements);
         endScope();
@@ -114,7 +114,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
     }
 
     @Override
-    public Boid visitGroupingExpr(Expr.Grouping expr){
+    public Void visitGroupingExpr(Expr.Grouping expr){
         resolve(expr.expression);
         return null;
     }
@@ -145,7 +145,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         FunctionTYpe enclosingFunction = currentFunction;
         currentFunction = type;
         beginScope();
-        for(Token pram : function.params){
+        for(Token param : function.params){
             declare(param);
             define(param);
         }
@@ -166,7 +166,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>{
         if(scopes.isEmpty()) return;
 
         Map<String, Boolean> scope = scopes.peek();
-        if(scope.containKey(name.lexeme)){
+        if(scope.containsKey(name.lexeme)){
             Lox.error(name, "Already a variable with this name in this scope.");
         }
         scope.put(name.lexeme, false);
