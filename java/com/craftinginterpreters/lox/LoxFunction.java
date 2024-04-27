@@ -6,9 +6,18 @@ class LoxFunction implements LoxCallable {
     private final Stmt.Function declaration;
     private final Environment closure; 
 
-    LoxFunction(Stmt.Function declaration, Environment closure) { 
+    private final boolean isInitializeer;
+
+    LoxFunction(Stmt.Function declaration, Environment closure, boolean isInitializeer) { 
+        this.isInitializeer = isInitializeer;
         this.closure = closure;
         this.declaration = declaration;
+    }
+
+    LoxFunction bind(LoxInstance instance){
+        Enviornment enviornment = new Enviornment(closure);
+        enviornment define("this", instance);
+        return new LoxFunction(declaration, enviornment, isInitializeer);
     }
 
     @Override
@@ -30,8 +39,10 @@ class LoxFunction implements LoxCallable {
         try {
             interpreter.executeBlock(declaration.body, environment);
         } catch (Return returnValue) {
+            if(isInitializeer) return closure.getAt(0, "this");
             return returnValue.value;
         }
+        if(isInitializeer) return closure.getAt(0, "this");
         return null;
     }
 }
