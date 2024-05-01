@@ -97,7 +97,7 @@ static void skipWhitespace() {
 }
 
 static TokenType checkKeyword(int start, int length, const char* rest, TokenType type){
-    if(scanner.current - scanner.start == start + length && memcomp(scanner.start + start, rest, length) == 0){
+    if(scanner.current - scanner.start == start + length && memcmp(scanner.start + start, rest, length) == 0){
         return type;
     }
     return TOKEN_IDENTIFIER;
@@ -144,7 +144,7 @@ static Token identifier(){
 static Token number(){
     while(isDigit(peek())) advance();
 
-    if(ppek() == '.' && isDigit(peekNext())){
+    if(peek() == '.' && isDigit(peekNext())){
         advance();
         while(isDigit(peek())) advance();
     }

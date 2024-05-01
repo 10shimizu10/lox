@@ -19,6 +19,11 @@ static int constantInstruction(const char* name, Chunk* chunk, int offset){
     return offset + 2;
 }
 
+static int simpleInstruction(const char* name, int offset){
+    printf("%s\n", name);
+    return offset + 1;
+}
+
 int disassembleInstruction(Chunk* chunk, int offset){
     printf("%04d", offset);
     if(offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]){
@@ -46,9 +51,4 @@ int disassembleInstruction(Chunk* chunk, int offset){
         printf("Unknow opcode %d\n", instruction);
         return offset + 1;
     }
-}
-
-static int simpleInstruction(const char* name, int offset){
-    printf("%s\n", name);
-    return offset + 1;
 }

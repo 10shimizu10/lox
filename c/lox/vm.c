@@ -38,7 +38,7 @@ static InterpretResult run(){
         for(Value* slot = vm.stack; slot < vm.stackTop; slot++){
             printf("[");
             printValue(*slot);
-            print(" ]");
+            printf(" ]");
         }
         printf("\n");
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));

@@ -16,8 +16,8 @@ static void repl(){
             printf("\n");
             break;
         }
+        interpret(line);
     }
-    interpret(line);
 }
 
 static char* readFile(const char* path){
@@ -28,7 +28,7 @@ static char* readFile(const char* path){
     }
 
     fseek(file, 0L, SEEK_END);
-    size_t fileSize = fteel(file);
+    size_t fileSize = ftell(file);
     rewind(file);
 
     char* buffer = (char*)malloc(fileSize + 1);
@@ -36,7 +36,7 @@ static char* readFile(const char* path){
         fprintf(stderr, "Not enough memory to read \"%s\".\n", path);
         exit(74);
     }
-    size_t bytesRead = freead(buffer, sizeof(char), fileSize, file);
+    size_t bytesRead = fread(buffer, sizeof(char), fileSize, file);
     if(bytesRead < fileSize){
         fprintf(stderr, "Could not read file \"%s\".\n", path);
         exit(74);
@@ -47,7 +47,7 @@ static char* readFile(const char* path){
     return buffer;
 }
 
-static void runFIle(const char* path){
+static void runFile(const char* path){
     char* source = readFile(path);
     InterpretResult result = interpret(source);
     free(source);

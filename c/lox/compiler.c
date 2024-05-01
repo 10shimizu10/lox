@@ -30,7 +30,7 @@ typedef enum {
   PREC_PRIMARY
 } Precedence;
 
-typedef void (ParseFn)();
+typedef void (*ParseFn)();
 
 typedef struct{
     ParseFn prefix;
@@ -81,7 +81,7 @@ static void advance(){
     }
 }
 
-static void consume(TokenType* type, char* message){
+static void consume(TokenType type, char* message){
     if(parser.current.type == type){
         advance();
         return;
@@ -105,7 +105,7 @@ static void emitReturn(){
 static uint8_t makeConstant(Value value){
     int constant = addConstant(currentChunk(), value);
     if(constant > UINT8_MAX){
-        erorr("Too many constants in one chunk.");
+        error("Too many constants in one chunk.");
         return 0;
     }
 
@@ -116,7 +116,7 @@ static void emitConstant(Value value){
     emitBytes(OP_CONSTANT, makeConstant(value));
 }
 
-static void endComplier(){
+static void endCompiler(){
     emitReturn();
 #ifdef DEBUG_PRINT_CODE
     if(!parser.hadError){
@@ -144,7 +144,7 @@ static void binary(){
 }
 
 static void grouping(){
-    expresion();
+    expression();
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
@@ -211,7 +211,7 @@ static void parsePrecedence(Precedence precedence){
     advance();
     ParseFn prefixRule = getRule(parser.previous.type)->prefix;
     if(prefixRule == NULL){
-        erorr("Expect expression.");
+        error("Expect expression.");
         return;
     }
     prefixRule();
@@ -228,10 +228,10 @@ static ParseRule* getRule(TokenType type){
 }
 
 static void expression(){
-    parsePrecedence(PREC_ASSIGNMENT)
+    parsePrecedence(PREC_ASSIGNMENT);
 }
 
-void compile(const char* source, Chunk* chunk){
+bool compile(const char* source, Chunk* chunk){
     initScanner(source);
     compilingChunk = chunk;
 
