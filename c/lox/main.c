@@ -59,6 +59,8 @@ static void runFile(const char* path){
 int main(int argc, const char* argv[]){
     initVM();
 
+    //引数に応じて、対話的モードとファイル実行モードを行う
+    //どちらも実行に関わるのはVMのinterpret関数である。
     if(argc == 1){
         repl();
     }else if (argc == 2){
