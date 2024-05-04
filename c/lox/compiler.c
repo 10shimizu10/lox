@@ -84,7 +84,7 @@ static void advance(){
     }
 }
 
-static void consume(TokenType type, char* message){
+static void consume(TokenType type, const char* message){
     if(parser.current.type == type){
         advance();
         return;
@@ -92,14 +92,14 @@ static void consume(TokenType type, char* message){
     errorAtCurrent(message);
 }
 
+static bool check(TokenType type){
+    return parser.current.type == type;
+}
+
 static bool match(TokenType type){
     if(!check(type)) return false;
     advance();
     return true;
-}
-
-static bool check(TokenType type){
-    return parser.current.type == type;
 }
 
 static void emitByte(uint8_t byte){
@@ -140,7 +140,7 @@ static void endCompiler(){
 
 static void expression();
 static void statement();
-static void declaratioin();
+static void declaration();
 static ParseRule* getRule(TokenType);
 static void parsePrecedence(Precedence precedence);
 
@@ -203,11 +203,11 @@ static void string(bool canAssign){
 static void namedVariable(Token name, bool canAssign){
     uint8_t arg = identifierConstant(&name);
 
-    if(canAssign && (TOKEN_EQUAL)){
+    if(canAssign && match(TOKEN_EQUAL)){
         expression();
         emitBytes(OP_SET_GLOBAL, arg);
     }else{
-        emitBYtes(OP_SET_GLOBAL, arg);
+        emitBytes(OP_GET_GLOBAL, arg);
     }
 }
 
@@ -249,7 +249,6 @@ ParseRule rules[] = {
   [TOKEN_LESS]          = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_LESS_EQUAL]    = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_IDENTIFIER]    = {variable, NULL, PREC_NONE},
-  [TOKEN_IDENTIFIER]    = {NULL,     NULL,   PREC_NONE},
   [TOKEN_STRING]        = {string,     NULL,   PREC_NONE},
   [TOKEN_NUMBER]        = {number,   NULL,   PREC_NONE},
   [TOKEN_AND]           = {NULL,     NULL,   PREC_NONE},
@@ -351,7 +350,7 @@ static void synchronize() {
   }
 }
 
-static void declaratioin(){
+static void declaration(){
     if(match(TOKEN_VAR)){
         varDeclaration();
     }else{
@@ -377,7 +376,7 @@ bool compile(const char* source, Chunk* chunk){
     advance();
 
     while(!match(TOKEN_EOF)){
-        declaratioin();
+        declaration();
     }
     endCompiler();
     return !parser.hadError;
