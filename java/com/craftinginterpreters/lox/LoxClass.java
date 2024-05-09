@@ -16,7 +16,7 @@ class LoxClass implements LoxCallable{
     }
 
     LoxFunction findMethod(String name){
-        if(methods.containKey(name)){
+        if(methods.containsKey(name)){
             return methods.get(name);
         }
         if(superclass != null){
